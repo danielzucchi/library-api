@@ -1,8 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-mongoose.connect("mongodb://localhost/library");
-
 const bookSchema = new Schema({
   title: { type: String, required: true },
   author: { type: String, required: true },
@@ -13,6 +11,6 @@ const bookSchema = new Schema({
   genre: String
 });
 
-const Boook = mongoose.model("Book", bookSchema);
+const Book = mongoose.model("Book", bookSchema);
 
 module.exports = Book;
