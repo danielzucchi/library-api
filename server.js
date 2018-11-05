@@ -11,7 +11,7 @@ app.use(
 app.use(bodyParser.json());
 
 const Book = require("./models/book");
-const apiRoutes = require("./controller/api-routes");
+const apiRoutes = require("./routes/api-routes");
 const services = require("./services/services");
 
 app.use(apiRoutes);
