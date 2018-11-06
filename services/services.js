@@ -1,10 +1,6 @@
 const Book = require("../models/book");
 const mongoose = require("mongoose");
 
-mongoose.connect(
-    'mongodb://root:password@localhost:27017/library?authSource=admin', { useNewUrlParser: true },
-    { useNewUrlParser: true }
-  );
 
 module.exports = {
     save: function(book) {
