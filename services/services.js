@@ -1,3 +1,7 @@
 const Book = require("../models/book");
 
-module.exports = {};
+module.exports = {
+  findBookById: (req, res) => {
+    Book.findById({ id: req.params._id }).exec();
+  }
+};
