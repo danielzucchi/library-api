@@ -1,3 +1,7 @@
 const Book = require("../models/book");
 
-module.exports = {};
+module.exports = {
+  findByName: function() {
+    return "worked";
+  }
+};
