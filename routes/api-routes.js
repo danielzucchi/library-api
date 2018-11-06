@@ -4,11 +4,6 @@ const router = express.Router();
 const Book = require("../models/book");
 const service = require("../services/services");
 
-// example route
-router.get("/books-library/books", (req, res) => {
-  res.send("Pippo");
-});
-
 router.post("/books-library/books", function (req, res) {
   let book = new Book({
     title: req.body.book.title,
@@ -25,7 +20,6 @@ router.post("/books-library/books", function (req, res) {
   } catch(error) {
     console.error(error);
   }
-  
   res.send(book);
 });
 
