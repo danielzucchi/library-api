@@ -3,9 +3,9 @@ const Book = require("../models/book");
 
 describe("Service Methods", () => {
     let book = new Book({
-        title: "Tiziade",
-        author: "Tizio Caio",
-        copyrightYear: 1853,
+        title: "David Copperfield",
+        author: "Charles Dickens",
+        copyrightYear: 1850,
         about: "",
         publisher: "Salani",
         available: true,
@@ -13,13 +13,14 @@ describe("Service Methods", () => {
       });
     
       test("inserts a book", () => {
-        // const result = service.save(book);
-        // expect(result.title).toBe("Tiziade");
-        // expect(result.author).toBe("Tizio Caio");
+        const result = service.save(book);
+        expect(result.title).toBe("David Copperfield");
+        expect(result.author).toBe("Charles Dickens");
+        expect(result.copyrightYear).toBe(1850);
        });
 
     afterEach(function() {
-       //service.delete(book.title);
+       service.delete(book.title);
     });
 });   
 
