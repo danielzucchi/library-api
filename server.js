@@ -17,10 +17,12 @@ const services = require("./services/services");
 app.use(apiRoutes);
 
 mongoose.connect(
-  "mongodb://localhost/library",
+  'mongodb://root:password@localhost:27017/library?authSource=admin', { useNewUrlParser: true },
   { useNewUrlParser: true }
 );
 
 app.listen(3000, () => {
   console.log("Server in session.");
 });
+
+module.exports = app;

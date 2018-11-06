@@ -2,14 +2,31 @@ const express = require("express");
 const router = express.Router();
 
 const Book = require("../models/book");
-const services = require("../services/services");
+const service = require("../services/services");
 
 // example route
 router.get("/books-library/books", (req, res) => {
-  console.log("This works");
-  res.sendStatus(200);
+  res.send("Pippo");
 });
 
-
+router.post("/books-library/books", function (req, res) {
+  let book = new Book({
+    title: req.body.book.title,
+    author: req.body.book.author,
+    copyrightYear: req.body.book.copyrightYear,
+    about: req.body.book.about,
+    publisher: req.body.book.publisher,
+    available: true,
+    genre: req.body.book.genre
+  });
+  
+  try {
+    service.save(book);
+  } catch(error) {
+    console.error(error);
+  }
+  
+  res.send(book);
+});
 
 module.exports = router;
