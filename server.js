@@ -17,7 +17,7 @@ const services = require("./services/services");
 app.use(apiRoutes);
 
 mongoose.connect(
-  "mongodb://localhost/library",
+  "mongodb://localhost/books",
   { useNewUrlParser: true }
 );
 

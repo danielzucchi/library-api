@@ -1,13 +1,12 @@
 const services = require("../services/services");
-const router = require("./api-routes");
 const request = require("supertest");
 const app = require("../server");
 
 jest.mock("../services/services");
 
-describe("Find Book by Name Route", () => {
+describe("API routes", () => {
   it("Given a book Id is called, then findBookById service is called", () => {
-    services.findBookById.mockImplementation({ id: "123" });
+    services.findBookById.mockImplementation();
     return request(app)
       .get("/findBookById/:id")
       .then(() => {
