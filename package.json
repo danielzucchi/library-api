@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "nodemon server.js",
-    "test": "jest"
+    "test": "jest /routes/api-routes.test.js"
   },
   "repository": {
     "type": "git",
