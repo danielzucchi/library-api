@@ -1,5 +1,4 @@
 const Book = require("../models/book");
-// const mongoose = require("mongoose");
 
 module.exports = {
   findBookById: id => {

@@ -1,11 +1,28 @@
 const services = require("../services/services");
 const Book = require("../models/book");
 const mongoose = require("mongoose");
+const MongoMemoryServer = require("mongodb-memory-server").default;
 
-mongoose.connect(
-  "mongodb://localhost/books",
-  { useNewUrlParser: true }
-);
+const mongoServer = new MongoMemoryServer();
+
+mongoose.Promise = Promise;
+mongoServer.getConnectionString().then(mongoUri => {
+  mongoose.connect(
+    mongoUri,
+    { useNewUrlParser: true }
+  );
+
+  mongoose.connection.on("error", e => {
+    if (e.message.code === "ETIMEDOUT") {
+      console.log(e);
+      mongoose.connect(
+        mongoUri,
+        mongooseOpts
+      );
+    }
+    console.log(e);
+  });
+});
 
 describe("Service API request", () => {
   let book = new Book({
@@ -22,8 +39,8 @@ describe("Service API request", () => {
     await book.save();
   });
 
-  afterEach(() => {
-    Book.findByIdAndDelete(book.id);
+  afterAll(() => {
+    mongoServer.stop();
   });
 
   it("Given the Book Id is called, then service returns correct book with matching Id", async () => {
