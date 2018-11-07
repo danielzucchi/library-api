@@ -8,23 +8,27 @@ mongoose.connect(
 );
 
 describe("Service API request", () => {
-  it("Given the Book Id is called, then service returns correct book with matching Id", () => {
-    let book = new Book({
-      title: "David Copperfield",
-      author: "Charles Dickens",
-      copyrightYear: 1850,
-      about: "",
-      publisher: "Salani",
-      available: true,
-      genre: "Novel"
-    });
+  let book = new Book({
+    title: "David Copperfield",
+    author: "Charles Dickens",
+    copyrightYear: 1850,
+    about: "",
+    publisher: "Salani",
+    available: true,
+    genre: "Novel"
+  });
 
-    const createdBook = services.save(book);
-    expect(createdBook.id).toMatch(book.id);
-    expect(createdBook.title).toMatch("David Copperfield");
+  beforeEach(async () => {
+    await book.save();
+  });
 
-    afterEach(() => {
-      service.delete(book.title);
-    });
+  afterEach(() => {
+    Book.findByIdAndDelete(book.id);
+  });
+
+  it("Given the Book Id is called, then service returns correct book with matching Id", async () => {
+    const foundBook = await services.findBookById(book.id);
+
+    expect(foundBook.title).toEqual(book.title);
   });
 });

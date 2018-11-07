@@ -5,8 +5,8 @@ const Book = require("../models/book");
 const services = require("../services/services");
 
 router.get("/findBookById/:id", async (req, res) => {
-  const bookId = await services.findBookById(req.params.id);
-  res.send(bookId);
+  const foundBook = await services.findBookById(req.params.id);
+  res.send(foundBook);
 });
 
 router.post("/books-library/books", function(req, res) {
