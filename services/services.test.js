@@ -29,6 +29,7 @@ describe("Service API request", () => {
   });
 
   afterAll(() => {
+    mongoose.disconnect();
     mongoServer.stop();
   });
 
