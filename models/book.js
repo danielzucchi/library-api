@@ -1,16 +1,14 @@
-const mongoose = require("mongoose");
-const Schema = mongoose.Schema;
+var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
+mongoose.connect('mongodb://root:password@localhost:27017/library?authSource=admin', { useNewUrlParser: true });
 
-const bookSchema = new Schema({
-  title: { type: String, required: true },
-  author: { type: String, required: true },
-  copyrightYear: Number,
-  about: String,
-  publisher: String,
-  available: Boolean,
-  genre: String
+var bookSchema = new Schema({
+    title: { type: String, required: true },
+    author: { type: String, required: true },
+    publisher: String,
+    available: Boolean,
+    language: String
 });
 
-const Book = mongoose.model("Book", bookSchema);
-
+var Book = mongoose.model('Book', bookSchema);
 module.exports = Book;
