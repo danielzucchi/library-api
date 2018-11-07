@@ -11,17 +11,6 @@ mongoServer.getConnectionString().then(mongoUri => {
     mongoUri,
     { useNewUrlParser: true }
   );
-
-  mongoose.connection.on("error", e => {
-    if (e.message.code === "ETIMEDOUT") {
-      console.log(e);
-      mongoose.connect(
-        mongoUri,
-        mongooseOpts
-      );
-    }
-    console.log(e);
-  });
 });
 
 describe("Service API request", () => {
