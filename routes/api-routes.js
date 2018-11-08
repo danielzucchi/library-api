@@ -10,8 +10,9 @@ router.get("/books-library/books", (req, res) => {
   res.sendStatus(200);
 });
 
-router.get("/books-library/books/:book", (req, res) => {
-  const book = services.findByName();
+router.get("/books-library/books/:title", async (req, res) => {
+  console.log("req", req.params.title);
+  const book = await services.findByName(req.params.title);
   console.log("book", book);
   res.send(book);
 });
