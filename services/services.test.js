@@ -76,11 +76,9 @@ describe("Calling service to find book by Id", () => {
   it("Given service is called while database connecrion is down, then service throws an exception", async () => {
     try {
       await mongoServer.stop();
-      await services.findBookById("5be1c1c27adc17371cfe94f0");
+      await services.findBookById("5be1c1c27adc17371cfe94f9");
     } catch (err) {
       expect(err.message).toBe("Failed to connect to the DB.");
-    } finally {
-      dbConnect();
     }
   });
 });
