@@ -13,8 +13,8 @@ mongoServer.getConnectionString().then(mongoUri => {
   );
 });
 
-describe("Service API request", () => {
-  let book = new Book({
+describe("Calling service to find book by Id", () => {
+  const book = {
     title: "David Copperfield",
     author: "Charles Dickens",
     copyrightYear: 1850,
@@ -22,10 +22,11 @@ describe("Service API request", () => {
     publisher: "Salani",
     available: true,
     genre: "Novel"
-  });
+  };
+  let bookModel = new Book(book);
 
-  beforeEach(async () => {
-    await book.save();
+  beforeAll(async () => {
+    await bookModel.save();
   });
 
   afterAll(() => {
@@ -33,9 +34,38 @@ describe("Service API request", () => {
     mongoServer.stop();
   });
 
-  it("Given the Book Id is called, then service returns correct book with matching Id", async () => {
-    const foundBook = await services.findBookById(book.id);
+  it("Given service is called with Book Id, then service returns correct book with matching Id", async () => {
+    const foundBook = await services.findBookById(bookModel.id);
 
-    expect(foundBook.title).toEqual(book.title);
+    expect(foundBook).toMatchObject(book);
+    expect(foundBook.id).toEqual(bookModel.id);
+  });
+
+  it("Given service is called with an innexistent Book Id, then service returns null", async () => {
+    const foundBook = await services.findBookById("5be1c1c27adc17371cfe94f0");
+
+    expect(foundBook).toBe(null);
+  });
+
+  it("Given service is called with null, then service returns null.", async () => {
+    const foundBook = await services.findBookById(null);
+
+    expect(foundBook).toBe(null);
+  });
+
+  it("Given service is called with undefined, then service returns null.", async () => {
+    const foundBook = await services.findBookById(undefined);
+
+    expect(foundBook).toBe(null);
+  });
+
+  it("Given service is called with an invalid Id, then service throws an exception", async () => {
+    expect.assertions(1);
+
+    try {
+      await services.findBookById("random");
+    } catch (err) {
+      expect(err.message).toBe("The Book Id requested is invalid.");
+    }
   });
 });
