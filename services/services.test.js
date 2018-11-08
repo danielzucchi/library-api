@@ -102,7 +102,19 @@ describe("", () => {
     expect(returnedBook).toHaveLength(0);
   });
 
-  it("bad test", async () => {
+  it("Given the findByName service is called, it should return an empty array if undefined is passed", async () => {
+    const returnedBook = await service.findByName(undefined);
+
+    expect(returnedBook).toHaveLength(0);
+  });
+
+  it("Given the findByName service is called, it should return an empty array if empty string is passed", async () => {
+    const returnedBook = await service.findByName("");
+
+    expect(returnedBook).toHaveLength(0);
+  });
+
+  it("Given the database connection fails, it should throw an error", async () => {
     expect.assertions(1);
 
     try {
@@ -124,40 +136,4 @@ describe("", () => {
       );
     }
   });
-
-  it("Given the findByName service is called, it should return an empty array if undefined is passed", async () => {
-    const returnedBook = await service.findByName(undefined);
-
-    expect(returnedBook).toHaveLength(0);
-  });
-
-  it("Given the findByName service is called, it should return an empty array if empty string is passed", async () => {
-    const returnedBook = await service.findByName("");
-
-    expect(returnedBook).toHaveLength(0);
-  });
-
-  // it("test exception", done => {
-  //   mongoServer.stop().then(() => {
-  //     console.log("mongoose disconnected");
-  //     setTimeout(() => {
-  //       service
-  //         .findByName("aadad")
-  //         .then(() => {
-  //           console.log("found book");
-  //           done();
-  //         })
-  //         .catch(e => {
-  //           console.log("threw exception: " + e);
-  //           expect(e.message).toBe("Failed to connect to DB.");
-  //           done();
-  //         })
-  //         .finally(() => {
-  //           console.log("finally");
-  //           mongoServer.start();
-  //           done();
-  //         });
-  //     }, 3000);
-  //   });
-  // });
 });
