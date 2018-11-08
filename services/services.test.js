@@ -4,14 +4,15 @@ const mongoose = require("mongoose");
 const MongoMemoryServer = require("mongodb-memory-server").default;
 
 const mongoServer = new MongoMemoryServer();
-
-mongoose.Promise = Promise;
-mongoServer.getConnectionString().then(mongoUri => {
-  mongoose.connect(
-    mongoUri,
-    { useNewUrlParser: true }
-  );
-});
+const dbConnect = () => {
+  mongoose.Promise = Promise;
+  mongoServer.getConnectionString().then(mongoUri => {
+    mongoose.connect(
+      mongoUri,
+      { useNewUrlParser: true, autoReconnect: false, bufferCommands: false }
+    );
+  });
+};
 
 describe("Calling service to find book by Id", () => {
   const book = {
@@ -25,7 +26,10 @@ describe("Calling service to find book by Id", () => {
   };
   let bookModel = new Book(book);
 
-  beforeAll(async () => {
+  beforeEach(async () => {
+    if (mongoose.connection.readyState === 0) {
+      await dbConnect();
+    }
     await bookModel.save();
   });
 
@@ -66,6 +70,17 @@ describe("Calling service to find book by Id", () => {
       await services.findBookById("random");
     } catch (err) {
       expect(err.message).toBe("The Book Id requested is invalid.");
+    }
+  });
+
+  it("Given service is called while database connecrion is down, then service throws an exception", async () => {
+    try {
+      await mongoServer.stop();
+      await services.findBookById("5be1c1c27adc17371cfe94f0");
+    } catch (err) {
+      expect(err.message).toBe("Failed to connect to the DB.");
+    } finally {
+      dbConnect();
     }
   });
 });

@@ -7,7 +7,12 @@ module.exports = {
         return foundBook;
       })
       .catch(err => {
-        throw new Error("The Book Id requested is invalid.");
+        if (err.name == "CastError") {
+          throw new Error("The Book Id requested is invalid.");
+        }
+        if (err.name == "MongoError") {
+          throw new Error("Failed to connect to the DB.");
+        }
       });
   }
 };
