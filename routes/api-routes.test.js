@@ -6,7 +6,9 @@ jest.mock("../services/services");
 
 describe("API Routes", () => {
   it("Given the Find Book by Name route is called, the findBookByName service should be called", () => {
-    service.findByName.mockImplementation({ bla: "test" });
+    service.findByName.mockImplementation(() => {
+      return { bla: "test" };
+    });
     return request(app)
       .get("/books-library/books/:book")
       .then(function() {
@@ -23,11 +25,3 @@ describe("API Routes", () => {
       .expect({ bla: "test" });
   });
 });
-
-// title: { type: String, required: true },
-// author: { type: String, required: true },
-// copyrightYear: Number,
-// about: String,
-// publisher: String,
-// available: Boolean,
-// genre: String
