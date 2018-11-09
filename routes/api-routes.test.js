@@ -6,9 +6,11 @@ jest.mock("../services/services");
 
 describe("API routes", () => {
   it("Given a book Id is called, then findBookById service is called", () => {
-    services.findBookById.mockImplementation();
+    services.findBookById.mockImplementation(() => {
+      return { id: "5be058ff29c7d6c16f779d28" };
+    });
     return request(app)
-      .get("/findBookById/:id")
+      .get("/books/:id")
       .then(() => {
         expect(services.findBookById).toHaveBeenCalled();
       });
@@ -19,7 +21,7 @@ describe("API routes", () => {
       return { id: "5be058ff29c7d6c16f779d28" };
     });
     return request(app)
-      .get("/findBookById/:id")
+      .get("/books/:id")
       .expect({ id: "5be058ff29c7d6c16f779d28" });
   });
 });
