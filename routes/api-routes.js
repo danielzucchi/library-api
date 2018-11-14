@@ -9,7 +9,7 @@ router.get("/books/:id", async (req, res) => {
     .then(foundBook => res.send(foundBook))
     .catch(err => {
       if (err.message == "The Book Id requested is invalid.") {
-        res.send("The book requested does not exist.");
+        res.send(404, "OMG!");
       }
     });
 });
