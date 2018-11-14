@@ -4,8 +4,14 @@ const services = require("../services/services");
 const Book = require("../models/book");
 
 router.get("/books/:id", async (req, res) => {
-  const foundBook = await services.findBookById(req.params.id);
-  res.send(foundBook);
+  await services
+    .findBookById(req.params.id)
+    .then(foundBook => res.send(foundBook))
+    .catch(err => {
+      if (err.message == "The Book Id requested is invalid.") {
+        res.send("The book requested does not exist.");
+      }
+    });
 });
 
 router.get("/books-library/books/:title", async (req, res) => {
