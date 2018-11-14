@@ -14,18 +14,18 @@ describe('bookService', () => {
             expect(mockSave).toHaveBeenCalledWith(mockBook);
         });
     });
-    test('it returns output of Book.save', () => {
-        const mockBook = {
-            title: 'my title'
-        };
-        jest.resetModules();
-        
-        jest.setMock('../models/book', {
-            create: jest.fn().mockReturnValue(mockBook)
-        });
-        const bookService = require('./services');
+        test('it returns output of Book.save', () => {
+            const mockBook = {
+                title: 'my title'
+            };
+            jest.resetModules();
+            
+            jest.setMock('../models/book', {
+                create: jest.fn().mockReturnValue(mockBook)
+            });
+            const bookService = require('./services');
 
-        expect(bookService.save(mockBook)).toEqual(mockBook);
+            expect(bookService.save(mockBook)).toEqual(mockBook);
     });
     // test('it returns output of Book.save', () => {
     //     const mockBook = {

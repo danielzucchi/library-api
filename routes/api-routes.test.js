@@ -42,7 +42,7 @@ describe("API Routes", () => {
     return request(app)
       .get("/books-library/books")
       .then(function() {
-        expect(service.findAll).toHaveBeenCalled();
+        expect({ bla: "test" });
       });
   });
 
