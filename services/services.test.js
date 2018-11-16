@@ -15,6 +15,8 @@ describe("Services", () => {
         create: mockCreateBook
       });
 
+      const bookService = require("./services");
+
       await bookService.createBook(mockBook);
 
       expect(mockCreateBook).toHaveBeenCalledWith(mockBook);
