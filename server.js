@@ -1,26 +1,26 @@
 const express = require("express");
-const app = express();
+const server = express();
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 
-app.use(
+server.use(
   bodyParser.urlencoded({
     extended: false
   })
 );
-app.use(bodyParser.json());
+server.use(bodyParser.json());
 
-const Book = require("./models/book");
 const apiRoutes = require("./routes/api-routes");
-const services = require("./services/services");
 
-app.use(apiRoutes);
+server.use(apiRoutes);
 
 mongoose.connect(
   "mongodb://localhost/library",
   { useNewUrlParser: true }
 );
 
-app.listen(3000, () => {
+server.listen(3000, () => {
   console.log("Server in session.");
 });
+
+module.exports = server;
