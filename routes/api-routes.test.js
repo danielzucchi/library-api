@@ -9,272 +9,268 @@ app.use(bodyParser.json());
 app.use(apiRoutes);
 
 const testBook = {
-  isbn: "ISBN1234",
-  title: "Title",
-  author: "Author",
-  edition: 1,
-  numOfCopies: 1,
-  active: true
+    isbn: "ISBN1234",
+    title: "Title",
+    author: "Author",
+    edition: 1,
+    numOfCopies: 1,
+    active: true
 };
 
 jest.mock("../services/services");
 
 describe("Book controllers", () => {
-  describe("createBook feature", () => {
-    it("Given the user requests to add a book, then the service gets called", () => {
-      services.createBook = jest.fn();
+    describe("createBook feature", () => {
+        it("Given the user requests to add a book, then the service gets called", () => {
+            services.createBook = jest.fn();
 
-      return request(app)
-        .post("/library/books")
-        .send(testBook)
-        .then(() => {
-          expect(services.createBook).toHaveBeenCalled();
+            return request(app)
+                .post("/library/books")
+                .send(testBook)
+                .then(() => {
+                    expect(services.createBook).toHaveBeenCalled();
+                });
+        });
+
+        it("Given the user requests to add a book, then the service gets called with the request body", () => {
+            services.createBook = jest.fn();
+
+            return request(app)
+                .post("/library/books")
+                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
+                .send(testBook)
+                .then(() => {
+                    expect(services.createBook).toHaveBeenCalledWith(testBook);
+                });
+        });
+
+        it("Given the user requests to add a book, then the controller returns the book provided by the service", () => {
+            services.createBook = jest.fn(() =>
+                Promise.resolve({
+                    _id: "jdnkjvbnafjk",
+                    isbn: "ISBN1234",
+                    title: "Title",
+                    author: "Author",
+                    edition: 1,
+                    numOfCopies: 1,
+                    active: true,
+                    __v: 0
+                })
+            );
+
+            return request(app)
+                .post("/library/books")
+                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
+                .send(testBook)
+                .then(response => {
+                    expect(response.statusCode).toBe(201);
+                    expect(response.body).toMatchObject(testBook);
+                });
+        });
+
+        it("Given the user requests to add a book without a required field (isbn), then the controller returns an error", () => {
+            services.createBook = jest.fn();
+
+            const testBookMissingIsbn = {
+                title: "Title",
+                author: "Author",
+                edition: 1,
+                numOfCopies: 1,
+                active: true
+            };
+
+            return request(app)
+                .post("/library/books")
+                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
+                .send(testBookMissingIsbn)
+                .then(response => {
+                    expect(response.statusCode).toBe(412);
+                    expect(response.error.text).toBe("ISBN is required.");
+                });
+        });
+
+        it("Given the user requests to add a book without a required field (title), then the controller returns an error", () => {
+            services.createBook = jest.fn();
+
+            const testBookMissingTitle = {
+                isbn: "ISBN1234",
+                author: "Author",
+                edition: 1,
+                numOfCopies: 1,
+                active: true
+            };
+
+            return request(app)
+                .post("/library/books")
+                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
+                .send(testBookMissingTitle)
+                .then(response => {
+                    expect(response.statusCode).toBe(412);
+                    expect(response.error.text).toBe("Title is required.");
+                });
+        });
+
+        it("Given the user requests to add a book without a required field (author), then the controller returns an error", () => {
+            services.createBook = jest.fn();
+
+            const testBookMissingAuthor = {
+                isbn: "ISBN1234",
+                title: "Title",
+                edition: 1,
+                numOfCopies: 1,
+                active: true
+            };
+
+            return request(app)
+                .post("/library/books")
+                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
+                .send(testBookMissingAuthor)
+                .then(response => {
+                    expect(response.statusCode).toBe(412);
+                    expect(response.error.text).toBe("Author is required.");
+                });
+        });
+
+        it("Given the user requests to add a book without a required field (edition), then the controller returns an error", () => {
+            services.createBook = jest.fn();
+
+            const testBookMissingEdition = {
+                isbn: "ISBN1234",
+                title: "Title",
+                author: "Author",
+                numOfCopies: 1,
+                active: true
+            };
+
+            return request(app)
+                .post("/library/books")
+                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
+                .send(testBookMissingEdition)
+                .then(response => {
+                    expect(response.statusCode).toBe(412);
+                    expect(response.error.text).toBe("Edition is required.");
+                });
+        });
+
+        it("Given the user requests to add a book without a required field (numOfCopies), then the controller returns an error", () => {
+            services.createBook = jest.fn();
+
+            const testBookMissingNumOfCopies = {
+                isbn: "ISBN1234",
+                title: "Title",
+                author: "Author",
+                edition: 1,
+                active: true
+            };
+
+            return request(app)
+                .post("/library/books")
+                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
+                .send(testBookMissingNumOfCopies)
+                .then(response => {
+                    expect(response.statusCode).toBe(412);
+                    expect(response.error.text).toBe("Number of copies is required.");
+                });
+        });
+
+        it("Given the user requests to add a book without a required field (active), then the controller returns an error", () => {
+            services.createBook = jest.fn();
+
+            const testBookMissingActive = {
+                isbn: "ISBN1234",
+                title: "Title",
+                author: "Author",
+                edition: 1,
+                numOfCopies: 1
+            };
+
+            return request(app)
+                .post("/library/books")
+                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
+                .send(testBookMissingActive)
+                .then(response => {
+                    expect(response.statusCode).toBe(412);
+                    expect(response.error.text).toBe("Active property is required.");
+                });
+        });
+
+        it("Given validation fails, then the createBook service will not be called", () => {
+            services.createBook = jest.fn();
+
+            const testBookMissingISBN = {
+                title: "Title",
+                author: "Author",
+                edition: 1,
+                numOfCopies: 1,
+                active: true
+            };
+
+            return request(app)
+                .post("/library/books")
+                .set("Accept", "application/json")
+                .set("Content-Type", "application/json")
+                .send(testBookMissingISBN)
+                .then(() => {
+                    expect(services.createBook).not.toHaveBeenCalled();
+                });
         });
     });
+    describe("find book by Id Book feature", () => {
+        it("Given the user requests to find  a book, then the service gets called", () => {
+            services.findBookById = jest.fn();
 
-    it("Given the user requests to add a book, then the service gets called with the request body", () => {
-      services.createBook = jest.fn();
+            return request(app)
+                .get("/library/books/:id")
+                .then(() => {
+                    expect(services.findBookById).toHaveBeenCalled();
+                });
+        });
 
-      return request(app)
-        .post("/library/books")
-        .set("Accept", "application/json")
-        .set("Content-Type", "application/json")
-        .send(testBook)
-        .then(() => {
-          expect(services.createBook).toHaveBeenCalledWith(testBook);
+        it("Given the user requests to find a book with a given ID, then the controller returns the book provided by the service", () => {
+            services.findBookById = jest.fn(() =>
+                Promise.resolve({
+                    _id: "jdnkjvbnafjk",
+                    isbn: "ISBN1234",
+                    title: "Title",
+                    author: "Author",
+                    edition: 1,
+                    numOfCopies: 1,
+                    active: true,
+                    __v: 0
+                })
+            );
+            return request(app)
+                .get("/library/books/:id")
+                .then(response => {
+                    expect(response.statusCode).toBe(200);
+                    expect(response.body).toMatchObject(testBook);
+                });
+        });
+        it("Given the user requests to find a book with a given ID, then the service returns a null, and the controller returns a 404 not found", () => {
+            services.findBookById = jest.fn(() => Promise.resolve(null));
+            return request(app)
+                .get("/library/books/:id")
+                .then(response => {
+                    expect(response.statusCode).toBe(404);
+                    expect(response.text).toBe("Book not found.");
+                });
+        });
+        it("Given the user requests to find a book with an ID in the wrong format, then the controller throws an invalid Id error", () => {
+            services.findBookById = jest.fn(() => Promise.reject(error));
+            return request(app)
+                .get("/library/books/:id")
+                .catch(err => {
+                    expect(err.statusCode).toBe(500);
+                    expect(err.error.text).toBe("Something went wrong.");
+                });
         });
     });
-
-    it("Given the user requests to add a book, then the controller returns the book provided by the service", () => {
-      services.createBook = jest.fn(() =>
-        Promise.resolve({
-          _id: "jdnkjvbnafjk",
-          isbn: "ISBN1234",
-          title: "Title",
-          author: "Author",
-          edition: 1,
-          numOfCopies: 1,
-          active: true,
-          __v: 0
-        })
-      );
-
-      return request(app)
-        .post("/library/books")
-        .set("Accept", "application/json")
-        .set("Content-Type", "application/json")
-        .send(testBook)
-        .then(response => {
-          expect(response.statusCode).toBe(201);
-          expect(response.body).toMatchObject(testBook);
-        });
-    });
-
-    it("Given the user requests to add a book without a required field (isbn), then the controller returns an error", () => {
-      services.createBook = jest.fn();
-
-      const testBookMissingIsbn = {
-        title: "Title",
-        author: "Author",
-        edition: 1,
-        numOfCopies: 1,
-        active: true
-      };
-
-      return request(app)
-        .post("/library/books")
-        .set("Accept", "application/json")
-        .set("Content-Type", "application/json")
-        .send(testBookMissingIsbn)
-        .then(response => {
-          expect(response.statusCode).toBe(412);
-          expect(response.error.text).toBe("ISBN is required.");
-        });
-    });
-
-    it("Given the user requests to add a book without a required field (title), then the controller returns an error", () => {
-      services.createBook = jest.fn();
-
-      const testBookMissingTitle = {
-        isbn: "ISBN1234",
-        author: "Author",
-        edition: 1,
-        numOfCopies: 1,
-        active: true
-      };
-
-      return request(app)
-        .post("/library/books")
-        .set("Accept", "application/json")
-        .set("Content-Type", "application/json")
-        .send(testBookMissingTitle)
-        .then(response => {
-          expect(response.statusCode).toBe(412);
-          expect(response.error.text).toBe("Title is required.");
-        });
-    });
-
-    it("Given the user requests to add a book without a required field (author), then the controller returns an error", () => {
-      services.createBook = jest.fn();
-
-      const testBookMissingAuthor = {
-        isbn: "ISBN1234",
-        title: "Title",
-        edition: 1,
-        numOfCopies: 1,
-        active: true
-      };
-
-      return request(app)
-        .post("/library/books")
-        .set("Accept", "application/json")
-        .set("Content-Type", "application/json")
-        .send(testBookMissingAuthor)
-        .then(response => {
-          expect(response.statusCode).toBe(412);
-          expect(response.error.text).toBe("Author is required.");
-        });
-    });
-
-    it("Given the user requests to add a book without a required field (edition), then the controller returns an error", () => {
-      services.createBook = jest.fn();
-
-      const testBookMissingEdition = {
-        isbn: "ISBN1234",
-        title: "Title",
-        author: "Author",
-        numOfCopies: 1,
-        active: true
-      };
-
-      return request(app)
-        .post("/library/books")
-        .set("Accept", "application/json")
-        .set("Content-Type", "application/json")
-        .send(testBookMissingEdition)
-        .then(response => {
-          expect(response.statusCode).toBe(412);
-          expect(response.error.text).toBe("Edition is required.");
-        });
-    });
-
-    it("Given the user requests to add a book without a required field (numOfCopies), then the controller returns an error", () => {
-      services.createBook = jest.fn();
-
-      const testBookMissingNumOfCopies = {
-        isbn: "ISBN1234",
-        title: "Title",
-        author: "Author",
-        edition: 1,
-        active: true
-      };
-
-      return request(app)
-        .post("/library/books")
-        .set("Accept", "application/json")
-        .set("Content-Type", "application/json")
-        .send(testBookMissingNumOfCopies)
-        .then(response => {
-          expect(response.statusCode).toBe(412);
-          expect(response.error.text).toBe("Number of copies is required.");
-        });
-    });
-
-    it("Given the user requests to add a book without a required field (active), then the controller returns an error", () => {
-      services.createBook = jest.fn();
-
-      const testBookMissingActive = {
-        isbn: "ISBN1234",
-        title: "Title",
-        author: "Author",
-        edition: 1,
-        numOfCopies: 1
-      };
-
-      return request(app)
-        .post("/library/books")
-        .set("Accept", "application/json")
-        .set("Content-Type", "application/json")
-        .send(testBookMissingActive)
-        .then(response => {
-          expect(response.statusCode).toBe(412);
-          expect(response.error.text).toBe("Active property is required.");
-        });
-    });
-
-    it("Given validation fails, then the createBook service will not be called", () => {
-      services.createBook = jest.fn();
-
-      const testBookMissingISBN = {
-        title: "Title",
-        author: "Author",
-        edition: 1,
-        numOfCopies: 1,
-        active: true
-      };
-
-      return request(app)
-        .post("/library/books")
-        .set("Accept", "application/json")
-        .set("Content-Type", "application/json")
-        .send(testBookMissingISBN)
-        .then(() => {
-          expect(services.createBook).not.toHaveBeenCalled();
-        });
-    });
-  });
-  describe("find book by Id Book feature", () => {
-    it("Given the user requests to find  a book, then the service gets called", () => {
-      services.findBookById = jest.fn();
-
-      return request(app)
-        .get("/library/books/:id")
-        .then(() => {
-          expect(services.findBookById).toHaveBeenCalled();
-        });
-    });
-
-    it("Given the user requests to find a book with a given ID , then the controller returns the book provided by the service", () => {
-      services.findBookById = jest.fn(() =>
-        Promise.resolve({
-          _id: "jdnkjvbnafjk",
-          isbn: "ISBN1234",
-          title: "Title",
-          author: "Author",
-          edition: 1,
-          numOfCopies: 1,
-          active: true,
-          __v: 0
-        })
-      );
-      return request(app)
-        .get("/library/books/:id")
-        .then(response => {
-          expect(response.statusCode).toBe(200);
-          expect(response.body).toMatchObject(testBook);
-        });
-    });
-    it("Given the user requests to find a book with a given ID , then the controller returns nothing ", () => {
-      services.findBookById = jest.fn(() =>
-        Promise.resolve(null)
-      );
-      return request(app)
-        .get("/library/books/:id")
-        .then(response => {
-          expect(response.statusCode).toBe(404);
-          expect(response.text).toBe("Book not found");
-        });
-    });
-    it("Given the user requests to find a book with a given ID , then the controller return invalid id  ", () => {
-      services.findBookById = jest.fn(() =>
-        Promise.reject(error)
-      );
-      return request(app)
-        .get("/library/books/:id")
-        .then(response => {
-          expect(response.statusCode).toBe(500);
-        //  expect(response.error.text).toBe("Something went wrong");
-        });
-    });
-  });
 });
