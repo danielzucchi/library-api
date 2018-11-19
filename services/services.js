@@ -18,7 +18,7 @@ const bookService = {
       .then(foundBook => foundBook)
       .catch(err => {
         if (err.name == "CastError") {
-          throw new Error(err.message);
+          throw new Error("Invalid Id");
         } else {
           throw new Error("Generic error");
         }

@@ -224,7 +224,57 @@ describe("Book controllers", () => {
     });
   });
   describe("find book by Id Book feature", () => {
+    it("Given the user requests to find  a book, then the service gets called", () => {
+      services.findBookById = jest.fn();
 
-  }); 
+      return request(app)
+        .get("/library/books/:id")
+        .then(() => {
+          expect(services.findBookById).toHaveBeenCalled();
+        });
+    });
 
+    it("Given the user requests to find a book with a given ID , then the controller returns the book provided by the service", () => {
+      services.findBookById = jest.fn(() =>
+        Promise.resolve({
+          _id: "jdnkjvbnafjk",
+          isbn: "ISBN1234",
+          title: "Title",
+          author: "Author",
+          edition: 1,
+          numOfCopies: 1,
+          active: true,
+          __v: 0
+        })
+      );
+      return request(app)
+        .get("/library/books/:id")
+        .then(response => {
+          expect(response.statusCode).toBe(200);
+          expect(response.body).toMatchObject(testBook);
+        });
+    });
+    it("Given the user requests to find a book with a given ID , then the controller returns nothing ", () => {
+      services.findBookById = jest.fn(() =>
+        Promise.resolve(null)
+      );
+      return request(app)
+        .get("/library/books/:id")
+        .then(response => {
+          expect(response.statusCode).toBe(404);
+          expect(response.text).toBe("Book not found");
+        });
+    });
+    it("Given the user requests to find a book with a given ID , then the controller return invalid id  ", () => {
+      services.findBookById = jest.fn(() =>
+        Promise.reject(error)
+      );
+      return request(app)
+        .get("/library/books/:id")
+        .then(response => {
+          expect(response.statusCode).toBe(500);
+        //  expect(response.error.text).toBe("Something went wrong");
+        });
+    });
+  });
 });

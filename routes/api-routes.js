@@ -35,4 +35,13 @@ router.post("/library/books", (req, res) => {
   });
 });
 
+router.get("/library/books/:id", (req, res) => {
+  services.findBookById(req.params.id).then(foundBook => {
+    if (!foundBook) {
+      return res.status(404).send("Book not found");
+    }
+    res.status(200).send(foundBook);
+  });
+});
+
 module.exports = router;
