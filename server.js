@@ -14,8 +14,13 @@ const apiRoutes = require("./routes/api-routes");
 
 server.use(apiRoutes);
 
+// mongoose.connect(
+//   "mongodb://localhost/library",
+//   { useNewUrlParser: true }
+// );
+
 mongoose.connect(
-  "mongodb://localhost/library",
+  "mongodb://root:password@localhost:27017/library?authSource=admin",
   { useNewUrlParser: true }
 );
 

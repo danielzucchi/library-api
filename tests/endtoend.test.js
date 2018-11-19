@@ -1,10 +1,8 @@
 const server = require("../server");
 const request = require("supertest");
-const mongoose = require("mongoose");
-const express = require("express");
-const app = express();
+const testHelper = require("./testHelper");
 
-const book = {
+const creationTestBook = {
   isbn: "ISBN1234",
   title: "Title",
   author: "Author",
@@ -21,21 +19,51 @@ const book = {
   active: true
 };
 
-describe("End to end tests", () => {
-  // afterAll(async done => {
-  //   await mongoose.disconnect();
-  //   done();
-  // });
+const searchTestBook = {
+  isbn: "ISBN5678",
+  title: "Other Title",
+  author: "Other Author",
+  edition: 1,
+  numOfCopies: 1,
+  active: true
+};
 
-  it("Given the user creates a book, then the book is added to the DB, and then the added book is returned with an Id.", async () => {
+describe("End to end tests", () => {
+  let searchTestBookID;
+  let listOfBooksToDelete = [];
+
+  beforeAll(async () => {
+    searchTestBookID = await testHelper.createBook(searchTestBook);
+    listOfBooksToDelete.push(searchTestBookID);
+  });
+
+  afterAll(async () => {
+    await testHelper.deleteBooksByIDs(listOfBooksToDelete);
+  });
+
+  it("Given the user creates a book, then the added book is returned with an Id.", async () => {
     return await request(server)
       .post("/library/books")
       .set("Accept", "application/json")
       .set("Content-Type", "application/json")
-      .send(book)
+      .send(creationTestBook)
+      .then(response => {
+        listOfBooksToDelete.push(response.body._id);
+        expect(response.statusCode).toBe(201);
+        expect(response.body).toMatchObject(creationTestBook);
+        expect(response.body._id).toBeDefined();
+      });
+  });
+
+  it("Given the user enters an id to find a book, then the corresponding book is returned from the DB with status 200.", async () => {
+    return await request(server)
+      .get("/library/books/" + searchTestBookID)
+      .set("Accept", "application/json")
+      .set("Content-Type", "application/json")
       .then(response => {
         expect(response.statusCode).toBe(200);
-        expect(response.body).toMatchObject(book);
+        expect(response.body).toMatchObject(searchTestBook);
+        expect(response.body._id).toBeDefined();
       });
   });
 });
