@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 
-//const Book = require("../models/book");
 const services = require("../services/services");
 
 const validateBook = book => {
@@ -32,7 +31,7 @@ router.post("/library/books", (req, res) => {
   }
 
   services.createBook(req.body).then(createdBook => {
-    res.status(200).send(createdBook);
+    res.status(201).send(createdBook);
   });
 });
 

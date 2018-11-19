@@ -21,7 +21,7 @@ jest.mock("../services/services");
 
 describe("Book controllers", () => {
   describe("createBook feature", () => {
-    it("Given the user requests to add a book, then the controller gets called", () => {
+    it("Given the user requests to add a book, then the service gets called", () => {
       services.createBook = jest.fn();
 
       return request(app)
@@ -32,7 +32,7 @@ describe("Book controllers", () => {
         });
     });
 
-    it("Given the user requests to add a book, then the controller gets called with the request body", () => {
+    it("Given the user requests to add a book, then the service gets called with the request body", () => {
       services.createBook = jest.fn();
 
       return request(app)
@@ -45,8 +45,19 @@ describe("Book controllers", () => {
         });
     });
 
-    it("Given the user requests to add a book, then the controller returns the same book", () => {
-      services.createBook = jest.fn(() => Promise.resolve(testBook));
+    it("Given the user requests to add a book, then the controller returns the book provided by the service", () => {
+      services.createBook = jest.fn(() =>
+        Promise.resolve({
+          _id: "jdnkjvbnafjk",
+          isbn: "ISBN1234",
+          title: "Title",
+          author: "Author",
+          edition: 1,
+          numOfCopies: 1,
+          active: true,
+          __v: 0
+        })
+      );
 
       return request(app)
         .post("/library/books")
@@ -54,8 +65,8 @@ describe("Book controllers", () => {
         .set("Content-Type", "application/json")
         .send(testBook)
         .then(response => {
-          expect(response.statusCode).toBe(200);
-          expect(response.body).toEqual(testBook);
+          expect(response.statusCode).toBe(201);
+          expect(response.body).toMatchObject(testBook);
         });
     });
 
@@ -103,7 +114,6 @@ describe("Book controllers", () => {
         });
     });
 
-
     it("Given the user requests to add a book without a required field (author), then the controller returns an error", () => {
       services.createBook = jest.fn();
 
@@ -125,7 +135,6 @@ describe("Book controllers", () => {
           expect(response.error.text).toBe("Author is required.");
         });
     });
-
 
     it("Given the user requests to add a book without a required field (edition), then the controller returns an error", () => {
       services.createBook = jest.fn();
@@ -193,7 +202,6 @@ describe("Book controllers", () => {
         });
     });
 
-
     it("Given validation fails, then the createBook service will not be called", () => {
       services.createBook = jest.fn();
 
@@ -214,6 +222,5 @@ describe("Book controllers", () => {
           expect(services.createBook).not.toHaveBeenCalled();
         });
     });
-    
   });
 });

@@ -22,11 +22,6 @@ const book = {
 };
 
 describe("End to end tests", () => {
-  // afterAll(async done => {
-  //   await mongoose.disconnect();
-  //   done();
-  // });
-
   it("Given the user creates a book, then the book is added to the DB, and then the added book is returned with an Id.", async () => {
     return await request(server)
       .post("/library/books")
@@ -34,8 +29,9 @@ describe("End to end tests", () => {
       .set("Content-Type", "application/json")
       .send(book)
       .then(response => {
-        expect(response.statusCode).toBe(200);
+        expect(response.statusCode).toBe(201);
         expect(response.body).toMatchObject(book);
+        expect(response.body._id).toBeDefined();
       });
   });
 });
