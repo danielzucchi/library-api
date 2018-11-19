@@ -58,8 +58,80 @@ describe("Services", () => {
   });
 
   describe("findById service", () => {
-    it("findByID service is called with a passed ID", async () => {});
+    it("findByID service is called with a passed ID", async () => {
+      const mockModelFindById = jest.fn(() => Promise.resolve());
+      jest.setMock("../models/book", {
+        findById: mockModelFindById
+      });
+      const bookService = require("./services");
+
+      await bookService.findBookById("3j2oiujt1rhui4grioweg");
+
+      expect(mockModelFindById).toHaveBeenCalledWith("3j2oiujt1rhui4grioweg");
+    });
+
+    it("Given the service findByID service is called with a passed ID then it returns the book with the id", async () => {
+      const mockModelFindById = jest.fn(() => Promise.resolve(mockBook));
+      jest.setMock("../models/book", {
+        findById: mockModelFindById
+      });
+      const bookService = require("./services");
+
+      const foundBook = await bookService.findBookById("anything");
+
+      expect(foundBook).toMatchObject(mockBook);
+    });
+
+    it("Given the service findByID service is called with a passed ID that is not found then it throws a 'Not Found' error", async () => {
+      const mockModelFindById = jest.fn(() => Promise.resolve(null));
+      jest.setMock("../models/book", {
+        findById: mockModelFindById
+      });
+      const bookService = require("./services");
+
+      const foundBook = await bookService.findBookById("anything");
+
+      expect(foundBook).toBe(null);
+    });
+
+    it("Given the service findByID service is called with a passed ID in an incorrect format, then service throws a CastError", async () => {
+      expect.assertions(1);
+
+      mockRejectFindById("CastError", "Invalid Id");
+
+      const bookService = require("./services");
+
+      try {
+        await bookService.findBookById("anything");
+      } catch (err) {
+        expect(err.message).toBe("Invalid Id");
+      }
+    });
+
+    it("Given the another error occurs, then findByID service throws a generic error", async () => {
+      expect.assertions(1);
+
+      mockRejectFindById("Generic error");
+
+      const bookService = require("./services");
+
+      try {
+        await bookService.findBookById("anything");
+      } catch (err) {
+        expect(err.message).toBe("Generic error");
+      }
+    });
   });
+
+  const mockRejectFindById = (name, message) => {
+    const error = new Error();
+    error.name = name;
+    error.message = message;
+
+    jest.setMock("../models/book", {
+      findById: jest.fn(() => Promise.reject(error))
+    });
+  };
 
   const mockModelCreateRejectWith = (name, message) => {
     const error = new Error();
