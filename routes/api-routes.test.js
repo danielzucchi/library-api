@@ -263,7 +263,7 @@ describe("Book controllers", () => {
                     expect(response.text).toBe("Book not found.");
                 });
         });
-        it("Given the user requests to find a book with an ID in the wrong format, then the controller throws an invalid Id error", () => {
+        it("Given the user requests to find a book with an ID in the wrong format, then the controller throws a generic error", () => {
             services.findBookById = jest.fn(() => Promise.reject(error));
             return request(app)
                 .get("/library/books/:id")
