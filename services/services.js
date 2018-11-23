@@ -11,6 +11,18 @@ const bookService = {
           throw new Error("Generic error");
         }
       });
+  },
+
+  findBookById: function(id) {
+    return Book.findById(id)
+      .then(foundBook => foundBook)
+      .catch(err => {
+        if (err.name == "CastError") {
+          throw new Error("INVALID_ID");
+        } else {
+          throw new Error("GENERIC_ERROR");
+        }
+      });
   }
 };
 

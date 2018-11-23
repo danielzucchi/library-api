@@ -21,7 +21,7 @@ jest.mock("../services/services");
 
 describe("Book controllers", () => {
   describe("createBook feature", () => {
-    it("Given the user requests to add a book, then the controller gets called", () => {
+    it("Given the user requests to add a book, then the service gets called", () => {
       services.createBook = jest.fn();
 
       return request(app)
@@ -32,7 +32,7 @@ describe("Book controllers", () => {
         });
     });
 
-    it("Given the user requests to add a book, then the controller gets called with the request body", () => {
+    it("Given the user requests to add a book, then the service gets called with the request body", () => {
       services.createBook = jest.fn();
 
       return request(app)
@@ -45,8 +45,19 @@ describe("Book controllers", () => {
         });
     });
 
-    it("Given the user requests to add a book, then the controller returns the same book", () => {
-      services.createBook = jest.fn(() => Promise.resolve(testBook));
+    it("Given the user requests to add a book, then the controller returns the book provided by the service", () => {
+      services.createBook = jest.fn(() =>
+        Promise.resolve({
+          _id: "jdnkjvbnafjk",
+          isbn: "ISBN1234",
+          title: "Title",
+          author: "Author",
+          edition: 1,
+          numOfCopies: 1,
+          active: true,
+          __v: 0
+        })
+      );
 
       return request(app)
         .post("/library/books")
@@ -54,8 +65,10 @@ describe("Book controllers", () => {
         .set("Content-Type", "application/json")
         .send(testBook)
         .then(response => {
-          expect(response.statusCode).toBe(200);
-          expect(response.body).toEqual(testBook);
+          expect(response.statusCode).toBe(201);
+          expect(response.body).toMatchObject(testBook);
+          expect(response.body._id).toBe("jdnkjvbnafjk");
+          expect(response.body.__v).toBe(0);
         });
     });
 
@@ -103,7 +116,6 @@ describe("Book controllers", () => {
         });
     });
 
-
     it("Given the user requests to add a book without a required field (author), then the controller returns an error", () => {
       services.createBook = jest.fn();
 
@@ -125,7 +137,6 @@ describe("Book controllers", () => {
           expect(response.error.text).toBe("Author is required.");
         });
     });
-
 
     it("Given the user requests to add a book without a required field (edition), then the controller returns an error", () => {
       services.createBook = jest.fn();
@@ -193,7 +204,6 @@ describe("Book controllers", () => {
         });
     });
 
-
     it("Given validation fails, then the createBook service will not be called", () => {
       services.createBook = jest.fn();
 
@@ -214,6 +224,74 @@ describe("Book controllers", () => {
           expect(services.createBook).not.toHaveBeenCalled();
         });
     });
-    
+  });
+
+  describe("find book by Id Book feature", () => {
+    it("Given the user requests to find  a book, then the service gets called", () => {
+      services.findBookById = jest.fn();
+
+      return request(app)
+        .get("/library/books/:id")
+        .then(() => {
+          expect(services.findBookById).toHaveBeenCalled();
+        });
+    });
+
+    it("Given the user requests to find a book with a given ID, then the controller returns the book provided by the service", () => {
+      services.findBookById = jest.fn(() =>
+        Promise.resolve({
+          _id: "jdnkjvbnafjk",
+          isbn: "ISBN1234",
+          title: "Title",
+          author: "Author",
+          edition: 1,
+          numOfCopies: 1,
+          active: true,
+          __v: 0
+        })
+      );
+      return request(app)
+        .get("/library/books/:id")
+        .then(response => {
+          expect(response.statusCode).toBe(200);
+          expect(response.body).toMatchObject(testBook);
+          expect(response.body._id).toBe("jdnkjvbnafjk");
+          expect(response.body.__v).toBe(0);
+        });
+    });
+
+    it("Given the user requests to find a book with a given ID, when the service returns null, then return 404 not found", () => {
+      services.findBookById = jest.fn(() => Promise.resolve(null));
+      return request(app)
+        .get("/library/books/:id")
+        .then(response => {
+          expect(response.statusCode).toBe(404);
+          expect(response.text).toBe("Book not found.");
+        });
+    });
+
+    it("Given the user requests to find a book by ID, when the ID is in the wrong format and the service returns an INVALID_ID error then return an error message with status 400.", () => {
+      const error = new Error("INVALID_ID");
+      services.findBookById = jest.fn(() => Promise.reject(error));
+
+      return request(app)
+        .get("/library/books/:id")
+        .then(response => {
+          expect(response.statusCode).toBe(400);
+          expect(response.text).toBe("Invalid ID.");
+        });
+    });
+
+    it("Given any other type of error is thrown, then the controller returns ta generic error message with status 500", () => {
+      const error = new Error("GENERIC_ERROR");
+      services.findBookById = jest.fn(() => Promise.reject(error));
+
+      return request(app)
+        .get("/library/books/:id")
+        .then(response => {
+          expect(response.statusCode).toBe(500);
+          expect(response.text).toBe("Something went wrong.");
+        });
+    });
   });
 });
