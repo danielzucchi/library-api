@@ -2,6 +2,8 @@ const express = require("express");
 const server = express();
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
+const swaggerUi = require("swagger-ui-express");
+swaggerDocument = require("./swagger.json");
 
 server.use(
   bodyParser.urlencoded({
@@ -12,6 +14,7 @@ server.use(bodyParser.json());
 
 const apiRoutes = require("./routes/api-routes");
 
+server.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 server.use(apiRoutes);
 
 // To connect to local database, uncomment this:
