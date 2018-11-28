@@ -6,33 +6,33 @@ Application to manage AND Digital's books in NodeJS
 
 ### Core
 
-• NodeJS
+* NodeJS
 
-• Express.js
+* Express.js
 
-• Mongoose
+* Mongoose
 
-• MongoDB
+* MongoDB
 
-• Docker (optional)
+* Docker (optional)
 
 ### Package Manager
 
-• npm
+* npm
 
-### Unit testing
+### Unit Testing
 
-• Jest
+* Jest
 
 ### Integration/end-to-end testing
 
-• Jest
+* Jest
 
-• Supertest
+* Supertest
 
-# 2.0 Build
+# 2.0 Setup
 
-## 2.1 run the mongo DB
+## 2.1 Run Mongo DB
 
 Can be run either through docker image or via local mongo db installation.
 
@@ -56,60 +56,39 @@ mongoose.connect(
 );
 ```
 
-### 2.1.1 Docker image
+### 2.1.1 Docker Image
 
-• Run the image :
+* Run the image :
 
 ```
 docker run -d --name docker-mongo -p 27017:27017 -e MONGO_INITDB_ROOT_USERNAME=root -e MONGO_INITDB_ROOT_PASSWORD=password mongo
 ```
 
-### 2.1.2 Local installation
+### 2.1.2 Local Installation
 
-• MongoDB will need to be installed locally, to do so use information at https://docs.mongodb.com/manual/installation/
-• Run Mongo daemon in terminal using `mongod`
+* MongoDB will need to be installed locally, to do so use information at https://docs.mongodb.com/manual/installation/
+
+* Run Mongo daemon in terminal using `mongod`
 
 ## 2.2 Install and Run
 
-• Install npm dependencies
+* Install npm dependencies
 `npm install`
 
-• Run app
+* Run app
 `npm start`
 
-# 3.0 API
+# 3.0 Testing
 
-## Update Book
+For end to end tests make sure the database is running
 
-Update the fields of any existing book.
+## Run tests in terminal
 
-**URL** : `/library/books/:id`
+* Run all tests - ```npm test```
+* Run test coverage - ```npm test -- --coverage```
 
-**Method** : `PUT`
+# 4.0 API
 
-### Success Response
+[Run the server](#22-Install-and-Run) and navigate to the following url:
 
-**Code** : `200 OK`
-
-**Content examples**
-
-For a book where you are updating the author field. You will receieve the response matching the body passed into the request
-
-```json
-{
-  "isbn": "ISBN1234",
-  "title": "Title",
-  "author": "newAuthor",
-  "edition": 1,
-  "numOfCopies": 1,
-  "about": "About",
-  "numOfPages": 500,
-  "illustrator": "Illustrator",
-  "copyrightYear": 1990,
-  "editor": "Editor",
-  "genre": "Genre",
-  "publisher": "Publisher",
-  "coverImage": "Cover Image",
-  "active": true
-}
-```
+[`http://localhost:3000/api-docs`](http://localhost:3000/api-docs)
