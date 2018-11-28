@@ -23,6 +23,19 @@ const bookService = {
           throw new Error("GENERIC_ERROR");
         }
       });
+  },
+
+  updateBook: function(bookId, book) {
+    const { _id, ...bookWithoutID } = book;
+    return Book.findByIdAndUpdate(bookId, bookWithoutID, { new: true })
+      .then(updatedBook => updatedBook)
+      .catch(err => {
+        if (err.name == "CastError") {
+          throw new Error("INVALID_ID");
+        } else {
+          throw new Error("GENERIC_ERROR");
+        }
+      });
   }
 };
 

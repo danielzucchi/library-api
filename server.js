@@ -14,15 +14,17 @@ const apiRoutes = require("./routes/api-routes");
 
 server.use(apiRoutes);
 
-// mongoose.connect(
-//   "mongodb://localhost/library",
-//   { useNewUrlParser: true }
-// );
-
+// To connect to local database, uncomment this:
 mongoose.connect(
-  "mongodb://root:password@localhost:27017/library?authSource=admin",
+  "mongodb://localhost/library",
   { useNewUrlParser: true }
 );
+
+// To connect to a database running on a Docker container, uncomment this:
+// mongoose.connect(
+//   "mongodb://root:password@localhost:27017/library?authSource=admin",
+//   { useNewUrlParser: true }
+// );
 
 server.listen(3000, () => {
   console.log("Server in session.");

@@ -1,7 +1,18 @@
 const mockBook = {
-  id: "3j2oiujt1rhui4grioweg",
+  _id: "3j2oiujt1rhui4grioweg",
   title: "my title"
 };
+
+const updatedMockBook = {
+  title: "updated title"
+};
+
+const updatedMockBookWithId = {
+  _id: "3j2oiujt1rhui4grioweg",
+  title: "updated title"
+};
+
+const updatedMockBookId = "3j2oiujt1rhui4grioweg";
 
 describe("Services", () => {
   // We set the mock specifically for each test because Mongoose doesn't allow for the Model to be mocked separately by Jest https://github.com/facebook/jest/issues/3073
@@ -61,7 +72,7 @@ describe("Services", () => {
   });
 
   describe("findById service", () => {
-    it("fBook model findById is called with a passed ID", async () => {
+    it("Book model findById is called with a passed ID", async () => {
       const mockModelFindById = jest.fn(() => Promise.resolve());
       jest.setMock("../models/book", {
         findById: mockModelFindById
@@ -85,7 +96,7 @@ describe("Services", () => {
       expect(foundBook).toMatchObject(mockBook);
     });
 
-    it("Given the findByID service is called with a passed ID that is not found then it returns null", async () => {
+    it("Given the findById service is called with a passed ID that is not found then it returns null", async () => {
       const mockModelFindById = jest.fn(() => Promise.resolve(null));
       jest.setMock("../models/book", {
         findById: mockModelFindById
@@ -97,7 +108,7 @@ describe("Services", () => {
       expect(foundBook).toBe(null);
     });
 
-    it("Given the findByID service is called with a passed ID in an incorrect format, then service throws a CastError", async () => {
+    it("Given the findById service is called with a passed ID in an incorrect format, then service throws a CastError", async () => {
       expect.assertions(1);
 
       mockModelFindByIdRejectWith("CastError");
@@ -123,6 +134,63 @@ describe("Services", () => {
       }
     });
   });
+  describe("updateBook service", () => {
+    it("Given the updateBook service is called with a passed book then the findByIdAndUpdate is called", async () => {
+      const mockUpdateBook = jest.fn(() => Promise.resolve());
+      jest.setMock("../models/book", {
+        findByIdAndUpdate: mockUpdateBook
+      });
+      const bookService = require("./services");
+
+      await bookService.updateBook(updatedMockBookId, updatedMockBook);
+
+      expect(mockUpdateBook).toHaveBeenCalledWith(
+        updatedMockBookId,
+        updatedMockBook,
+        {
+          new: true
+        }
+      );
+    });
+
+    it("When updateBook service is called with a book, then service returns an updated book", async () => {
+      const bookService = mockModelUpdateResolveWith(updatedMockBookWithId);
+
+      const updatedBook = await bookService.updateBook(
+        mockBook._id,
+        updatedMockBook,
+        { new: true }
+      );
+
+      expect(updatedBook).toEqual(updatedMockBookWithId);
+    });
+
+    it("When an updateBook is called with an invalid Id, then service throws a CastError", async () => {
+      expect.assertions(1);
+
+      mockModelUpdateRejectWith("CastError");
+      const bookService = require("./services");
+
+      try {
+        await bookService.updateBook("random", updatedMockBook);
+      } catch (err) {
+        expect(err.message).toBe("INVALID_ID");
+      }
+    });
+
+    it("When updateBook is called with an invalid Id, then service throws a generic error", async () => {
+      expect.assertions(1);
+
+      mockModelUpdateRejectWith("Generic error");
+      const bookService = require("./services");
+
+      try {
+        await bookService.updateBook("anything", updatedMockBook);
+      } catch (err) {
+        expect(err.message).toBe("GENERIC_ERROR");
+      }
+    });
+  });
 
   const mockModelFindByIdRejectWith = (name, message) => {
     const error = new Error();
@@ -142,6 +210,24 @@ describe("Services", () => {
     jest.setMock("../models/book", {
       create: jest.fn(() => Promise.reject(error))
     });
+  };
+
+  const mockModelUpdateResolveWith = updatedMockBook => {
+    jest.setMock("../models/book", {
+      findByIdAndUpdate: jest.fn(() => Promise.resolve(updatedMockBook))
+    });
+    return require("./services");
+  };
+
+  const mockModelUpdateRejectWith = (name, message) => {
+    const error = new Error();
+    error.name = name;
+    error.message = message;
+
+    jest.setMock("../models/book", {
+      findByIdAndUpdate: jest.fn(() => Promise.reject(error))
+    });
+    return require("./services");
   };
 
   const mockModelCreateResolveWith = mockBook => {
