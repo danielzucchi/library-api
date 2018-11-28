@@ -28,6 +28,15 @@ const searchTestBook = {
   active: true
 };
 
+const searchTestBookUpdated = {
+  isbn: "ISBN5678",
+  title: "New Updated Title",
+  author: "New Updated Author",
+  edition: 1,
+  numOfCopies: 1,
+  active: true
+};
+
 describe("End to end tests", () => {
   let searchTestBookID;
   let listOfBooksToDelete = [];
@@ -64,6 +73,18 @@ describe("End to end tests", () => {
         expect(response.statusCode).toBe(200);
         expect(response.body).toMatchObject(searchTestBook);
         expect(response.body._id).toBeDefined();
+      });
+  });
+
+  it("Given the user attempts to update a book, then the corresponding book is updated and the new version is returned from the DB with status 200.", async () => {
+    return await request(server)
+      .put("/library/books/" + searchTestBookID)
+      .send(searchTestBookUpdated)
+      .set("Accept", "application/json")
+      .set("Content-Type", "application/json")
+      .then(response => {
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toMatchObject(searchTestBookUpdated);
       });
   });
 });
