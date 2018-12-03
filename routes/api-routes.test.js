@@ -237,7 +237,7 @@ describe("Book controllers", () => {
     it("Given the user attempts to create a book , then the controller returns a validation error ", () => {
       const error = new Error();
       error.name = "ValidationError";
-      error.message = "Validation Error";
+      error.message = "missing or wrong field";
 
       services.createBook = jest.fn(() => Promise.reject(error));
 
@@ -247,8 +247,8 @@ describe("Book controllers", () => {
         .set("Content-Type", "application/json")
         .send(testBook)
         .then(response => {
-          expect(response.statusCode).toBe(400);
-          expect(response.text).toBe("Validation Error");
+          expect(response.statusCode).toBe(412);
+          expect(response.text).toBe("missing or wrong field");
         });
     });
     it("Given the user attempts to create a book , then the controller returns something went wrong ", () => {

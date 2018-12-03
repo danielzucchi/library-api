@@ -40,7 +40,7 @@ router.post("/library/books", (req, res) => {
     })
     .catch(err => {
       if (err.name == "ValidationError") {
-        res.status(httpStatus.BAD_REQUEST).send(err.message);
+        res.status(httpStatus.PRECONDITION_FAILED).send("missing or wrong field");
       } else {
         res
           .status(httpStatus.INTERNAL_SERVER_ERROR)
