@@ -24,7 +24,7 @@
     "/books": {
       "post": {
         "tags": ["Book"],
-        "description": "Create new book in system",
+        "description": "Create new book in the system",
         "parameters": [
           {
             "name": "book",
@@ -53,7 +53,7 @@
     "/books/{id}": {
       "get": {
         "tags": ["Book"],
-        "description": "Find a book by id in system",
+        "description": "Find a book by id in the system",
         "parameters": [
           {
             "name": "id",
@@ -84,7 +84,7 @@
       },
       "put": {
         "tags": ["Book"],
-        "description": "Find a book by id in system and update its fields",
+        "description": "Find a book by id in the system and update its fields",
         "parameters": [
           {
             "name": "id",
@@ -120,6 +120,37 @@
             "type": "string"
           }
         }
+      },
+      "delete": {
+        "tags": ["Book"],
+        "description": "Deletes a book by id in the system",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "type": "string",
+            "required": true,
+            "description": "id of the book in the system",
+            "format": "/^[0-9a-fA-F]{24}$/"
+          }
+        ],
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "Returns confirmation that the book has been deleted",
+            "schema": {
+              "$ref": "#/definitions/BookDeletedResponse"
+            }
+          },
+          "404": {
+            "description": "Book not found.",
+            "type": "string"
+          },
+          "500": {
+            "description": "Something went wrong.",
+            "type": "string"
+          }
+        }
       }
     }
   },
@@ -132,7 +163,7 @@
         "author",
         "edition",
         "numOfCopies",
-        "active"
+        "deleted"
       ],
       "properties": {
         "title": {
@@ -175,7 +206,7 @@
         "coverImage": {
           "type": "string"
         },
-        "active": {
+        "deleted": {
           "type": "boolean"
         }
       }
@@ -187,7 +218,7 @@
         "author",
         "edition",
         "numOfCopies",
-        "active"
+        "deleted"
       ],
       "properties": {
         "_id": {
@@ -233,11 +264,24 @@
         "coverImage": {
           "type": "string"
         },
-        "active": {
+        "deleted": {
           "type": "boolean"
         },
         "__v": {
           "type": "number"
+        }
+      }
+    },
+    "BookDeletedResponse": {
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
         }
       }
     }

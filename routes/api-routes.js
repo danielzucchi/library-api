@@ -14,7 +14,7 @@ const schema = {
     author: { type: "string", required: true },
     edition: { type: "number", required: true },
     numOfCopies: { type: "number", required: true },
-    active: { type: "boolean", required: true }
+    deleted: { type: "boolean", default: false }
   }
 };
 
@@ -76,6 +76,29 @@ router.put("/library/books/:id", (req, res) => {
     .catch(err => {
       if (err.name == "CastError") {
         res.status(httpStatus.BAD_REQUEST).send("INVALID_ID");
+      } else {
+        res
+          .status(httpStatus.INTERNAL_SERVER_ERROR)
+          .send("Something went wrong.");
+      }
+    });
+});
+
+router.delete("/library/books/:id", (req, res) => {
+  services
+    .deleteBook(req.params.id)
+    .then(deletedBook => {
+      if (!deletedBook) {
+        res.status(httpStatus.NOT_FOUND).send("Book not found.");
+      } else {
+        res
+          .status(httpStatus.OK)
+          .send({ message: `${deletedBook.title} has been deleted.` });
+      }
+    })
+    .catch(err => {
+      if (err.message == "INVALID_ID") {
+        res.status(httpStatus.BAD_REQUEST).send("Invalid ID.");
       } else {
         res
           .status(httpStatus.INTERNAL_SERVER_ERROR)

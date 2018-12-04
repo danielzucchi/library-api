@@ -16,7 +16,7 @@ const creationTestBook = {
   genre: "Genre",
   publisher: "Publisher",
   coverImage: "Cover Image",
-  active: true
+  deleted: false
 };
 
 const searchTestBook = {
@@ -25,7 +25,7 @@ const searchTestBook = {
   author: "Other Author",
   edition: 1,
   numOfCopies: 1,
-  active: true
+  deleted: false
 };
 
 const searchTestBookUpdated = {
@@ -34,7 +34,16 @@ const searchTestBookUpdated = {
   author: "New Updated Author",
   edition: 1,
   numOfCopies: 1,
-  active: true
+  deleted: false
+};
+
+const bookToDelete = {
+  isbn: "ISBN5678",
+  title: "Other Title",
+  author: "Other Author",
+  edition: 1,
+  numOfCopies: 1,
+  deleted: false
 };
 
 describe("End to end tests", () => {
@@ -85,6 +94,21 @@ describe("End to end tests", () => {
       .then(response => {
         expect(response.statusCode).toBe(200);
         expect(response.body).toMatchObject(searchTestBookUpdated);
+      });
+  });
+
+  it("Given the user attempts to delete a book, then the correstponding book is deleted and the successful delete message is returned.", async () => {
+    const bookToDeleteId = await testHelper.createBook(bookToDelete);
+    listOfBooksToDelete.push(bookToDeleteId);
+
+    return await request(server)
+      .delete("/library/books/" + bookToDeleteId)
+      .set("Accept", "application/json")
+      .then(response => {
+        expect(response.statusCode).toBe(200);
+        expect(response.body).toEqual({
+          message: "Other Title has been deleted."
+        });
       });
   });
 });
