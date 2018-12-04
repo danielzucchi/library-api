@@ -71,6 +71,14 @@ const bookService = {
           throw new Error("GENERIC_ERROR");
         }
       });
+  },
+
+  findAll: function() {
+    return Book.find({ deleted: false })
+      .then(foundBook => foundBook)
+      .catch(err => {
+        throw new Error("GENERIC_ERROR");
+      });
   }
 };
 

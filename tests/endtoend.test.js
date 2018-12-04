@@ -15,8 +15,7 @@ const creationTestBook = {
   editor: "Editor",
   genre: "Genre",
   publisher: "Publisher",
-  coverImage: "Cover Image",
-  deleted: false
+  coverImage: "Cover Image"
 };
 
 const searchTestBook = {
@@ -24,8 +23,7 @@ const searchTestBook = {
   title: "Other Title",
   author: "Other Author",
   edition: 1,
-  numOfCopies: 1,
-  deleted: false
+  numOfCopies: 1
 };
 
 const searchTestBookUpdated = {
@@ -33,8 +31,24 @@ const searchTestBookUpdated = {
   title: "New Updated Title",
   author: "New Updated Author",
   edition: 1,
+  numOfCopies: 1
+};
+
+const deletedTestBook = {
+  isbn: "ISBN1234",
+  title: "Title test ",
+  author: "Author",
+  edition: 1,
   numOfCopies: 1,
-  deleted: false
+  about: "About",
+  numOfPages: 500,
+  illustrator: "Illustrator",
+  copyrightYear: 1990,
+  editor: "Editor",
+  genre: "Genre",
+  publisher: "Publisher",
+  coverImage: "Cover Image",
+  deleted: true
 };
 
 const bookToDelete = {
@@ -42,16 +56,14 @@ const bookToDelete = {
   title: "Other Title",
   author: "Other Author",
   edition: 1,
-  numOfCopies: 1,
-  deleted: false
+  numOfCopies: 1
 };
 
 describe("End to end tests", () => {
   let searchTestBookID;
   let listOfBooksToDelete = [];
-
   beforeAll(async () => {
-    searchTestBookID = await testHelper.createBook(searchTestBook);
+    searchTestBookID = await testHelper.insertBookInDB(searchTestBook);
     listOfBooksToDelete.push(searchTestBookID);
   });
 
@@ -97,8 +109,19 @@ describe("End to end tests", () => {
       });
   });
 
+  it("Given the user attempts to get list of books, then  a list of book is displayed with status 200.", async () => {
+    let listBookInDB = await testHelper.getNonDeletedBooksFromDB();
+    return await request(server)
+      .get("/library/books")
+      .set("Accept", "application/json")
+      .then(response => {
+        expect(response.statusCode).toBe(200);
+        expect(response.body.length).toEqual(listBookInDB.length);
+      });
+  });
+
   it("Given the user attempts to delete a book, then the correstponding book is deleted and the successful delete message is returned.", async () => {
-    const bookToDeleteId = await testHelper.createBook(bookToDelete);
+    const bookToDeleteId = await testHelper.insertBookInDB(bookToDelete);
     listOfBooksToDelete.push(bookToDeleteId);
 
     return await request(server)
