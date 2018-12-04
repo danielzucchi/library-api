@@ -46,6 +46,10 @@
           "412": {
             "description": "Precondition failed - missing or wrong field",
             "type": "string"
+          },
+          "500": {
+            "description": "Something went wrong",
+            "type": "string"
           }
         }
       },

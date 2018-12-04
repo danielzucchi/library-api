@@ -33,9 +33,20 @@ router.post("/library/books", (req, res) => {
     return res.status(httpStatus.PRECONDITION_FAILED).send(validationResult);
   }
 
-  services.createBook(req.body).then(createdBook => {
-    res.status(httpStatus.CREATED).send(createdBook);
-  });
+  services
+    .createBook(req.body)
+    .then(createdBook => {
+      res.status(httpStatus.CREATED).send(createdBook);
+    })
+    .catch(err => {
+      if (err.name == "ValidationError") {
+        res.status(httpStatus.PRECONDITION_FAILED).send("missing or wrong field");
+      } else {
+        res
+          .status(httpStatus.INTERNAL_SERVER_ERROR)
+          .send("Something went wrong");
+      }
+    });
 });
 
 router.get("/library/books/:id", (req, res) => {

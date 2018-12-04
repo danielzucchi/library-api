@@ -226,6 +226,41 @@ describe("Book controllers", () => {
           expect(services.createBook).not.toHaveBeenCalled();
         });
     });
+
+    it("Given the user attempts to create a book , then the controller returns a validation error ", () => {
+      const error = new Error();
+      error.name = "ValidationError";
+      error.message = "missing or wrong field";
+
+      services.createBook = jest.fn(() => Promise.reject(error));
+
+      return request(app)
+        .post("/library/books")
+        .set("Accept", "application/json")
+        .set("Content-Type", "application/json")
+        .send(testBook)
+        .then(response => {
+          expect(response.statusCode).toBe(412);
+          expect(response.text).toBe("missing or wrong field");
+        });
+    });
+    it("Given the user attempts to create a book , then the controller returns something went wrong ", () => {
+      const error = new Error();
+      error.name = "Generic error";
+      error.message = "Something went wrong";
+
+      services.createBook = jest.fn(() => Promise.reject(error));
+
+      return request(app)
+        .post("/library/books")
+        .set("Accept", "application/json")
+        .set("Content-Type", "application/json")
+        .send(testBook)
+        .then(response => {
+          expect(response.statusCode).toBe(500);
+          expect(response.text).toBe("Something went wrong");
+        });
+    });
   });
 
   describe("find book by Id Book feature", () => {
