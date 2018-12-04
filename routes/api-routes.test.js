@@ -234,7 +234,7 @@ describe("Book controllers", () => {
         });
     });
 
-    it("Given the user attempts to create a book , then the controller returns a validation error ", () => {
+    it("When the service throws a ValidationError, Then the controller returns 412 status code and error message ", () => {
       const error = new Error();
       error.name = "ValidationError";
       error.message = "missing or wrong field";
@@ -251,7 +251,7 @@ describe("Book controllers", () => {
           expect(response.text).toBe("missing or wrong field");
         });
     });
-    it("Given the user attempts to create a book , then the controller returns something went wrong ", () => {
+    it("When the service throws exception, Then the controller returns 500 status code and error messagegit ", () => {
       const error = new Error();
       error.name = "Generic error";
       error.message = "Something went wrong";
