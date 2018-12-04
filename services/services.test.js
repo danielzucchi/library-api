@@ -1,29 +1,41 @@
+function toObject() {
+  return this;
+}
+
+// Note: Some these objects are mocking the toObject function as they are being used as both request objects and responses
 const mockBook = {
   _id: "3j2oiujt1rhui4grioweg",
-  title: "my title"
+  title: "my title",
+  toObject: toObject
 };
 
 const updatedMockBook = {
-  title: "updated title"
+  title: "updated title",
+  toObject: toObject
 };
 
 const updatedMockBookWithId = {
   _id: "3j2oiujt1rhui4grioweg",
-  title: "updated title"
+  title: "updated title",
+  toObject: toObject
 };
+const mocklistBooks = [mockBook, updatedMockBook];
 
 const bookWithDeletedFalse = {
   _id: "3j2oiujt1rhui4grioweg",
-  deleted: false
+  deleted: false,
+  toObject: toObject
 };
 
 const bookWithDeletedTrue = {
   _id: "3j2oiujt1rhui4grioweg",
-  deleted: true
+  deleted: true,
+  toObject: toObject
 };
 
 const bookWithDeletedRemoved = {
-  _id: "3j2oiujt1rhui4grioweg"
+  _id: "3j2oiujt1rhui4grioweg",
+  toObject: toObject
 };
 
 const updatedMockBookId = "3j2oiujt1rhui4grioweg";
@@ -66,7 +78,7 @@ describe("Services", () => {
 
       const createdBook = await bookService.createBook(bookWithDeletedFalse);
 
-      expect(createdBook).toEqual(bookWithDeletedRemoved);
+      expect(createdBook).toMatchObject(bookWithDeletedRemoved);
     });
 
     it("createBook service returns an Validation Error message when required field is missing", async () => {
@@ -215,17 +227,20 @@ describe("Services", () => {
       const mockBookWithDelete = {
         _id: "3j2oiujt1rhui4grioweg",
         title: "my title",
-        deleted: false
+        deleted: false,
+        toObject: toObject
       };
       const mockBookWithUpdatedID = {
         _id: "3j2oiujt1rhui4grioweg",
         title: "updated title",
-        deleted: false
+        deleted: false,
+        toObject: toObject
       };
 
       const updatedMockBookWithoutDeleted = {
         _id: "3j2oiujt1rhui4grioweg",
-        title: "updated title"
+        title: "updated title",
+        toObject: toObject
       };
 
       const mockFindById = jest.fn(() => Promise.resolve(mockBookWithDelete));
@@ -345,6 +360,41 @@ describe("Services", () => {
     });
   });
 
+  describe("find all books service", () => {
+    it("Book model findAll is called without any parameters", async () => {
+      const mockModelFind = jest.fn(() => Promise.resolve());
+      jest.setMock("../models/book", {
+        find: mockModelFind
+      });
+      const bookService = require("./services");
+
+      await bookService.findAll();
+
+      expect(mockModelFind).toHaveBeenCalledWith({ deleted: false });
+    });
+
+    it("Given the findAll service is called  then it returns a list of books provided by the Book Model find", async () => {
+      const mockModelFindAll = jest.fn(() => Promise.resolve(mocklistBooks));
+      jest.setMock("../models/book", {
+        find: mockModelFindAll
+      });
+      const bookService = require("./services");
+
+      const foundlistBook = await bookService.findAll();
+
+      expect(foundlistBook).toMatchObject(mocklistBooks);
+    });
+
+    it("When findAll is called and for any  error occured  , then service throws a generic error", async () => {
+      expect.assertions(1);
+      const bookService = mockModelFindRejectWith("Generic error");
+
+      await expect(bookService.findAll()).rejects.toThrowError(
+        new Error("GENERIC_ERROR")
+      );
+    });
+  });
+
   const mockModelFindByIdRejectWith = (name, message) => {
     const error = new Error();
     error.name = name;
@@ -391,6 +441,16 @@ describe("Services", () => {
 
     jest.setMock("../models/book", {
       findByIdAndUpdate: jest.fn(() => Promise.reject(error))
+    });
+    return require("./services");
+  };
+  const mockModelFindRejectWith = (name, message) => {
+    const error = new Error();
+    error.name = name;
+    error.message = message;
+
+    jest.setMock("../models/book", {
+      find: jest.fn(() => Promise.reject(error))
     });
     return require("./services");
   };

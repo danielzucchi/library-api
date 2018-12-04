@@ -48,6 +48,23 @@
             "type": "string"
           }
         }
+      },
+      "get": {
+        "tags": ["Book"],
+        "description": "Get all books that have not been deleted.",
+        "produces": ["application/json"],
+        "responses": {
+          "200": {
+            "description": "get list of books",
+            "schema": {
+              "$ref": "#/definitions/BooksResponse"
+            }
+          },
+          "500": {
+            "description": "Something went wrong",
+            "type": "string"
+          }
+        }
       }
     },
     "/books/{id}": {
@@ -157,14 +174,7 @@
 
   "definitions": {
     "BookRequest": {
-      "required": [
-        "title",
-        "isbn",
-        "author",
-        "edition",
-        "numOfCopies",
-        "deleted"
-      ],
+      "required": ["title", "isbn", "author", "edition", "numOfCopies"],
       "properties": {
         "title": {
           "type": "string"
@@ -205,21 +215,11 @@
         },
         "coverImage": {
           "type": "string"
-        },
-        "deleted": {
-          "type": "boolean"
         }
       }
     },
     "BookResponse": {
-      "required": [
-        "title",
-        "isbn",
-        "author",
-        "edition",
-        "numOfCopies",
-        "deleted"
-      ],
+      "required": ["title", "isbn", "author", "edition", "numOfCopies"],
       "properties": {
         "_id": {
           "type": "string"
@@ -264,12 +264,15 @@
         "coverImage": {
           "type": "string"
         },
-        "deleted": {
-          "type": "boolean"
-        },
         "__v": {
           "type": "number"
         }
+      }
+    },
+    "BooksResponse": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/BookResponse"
       }
     },
     "BookDeletedResponse": {

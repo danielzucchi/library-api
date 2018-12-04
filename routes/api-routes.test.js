@@ -36,6 +36,7 @@ const deletedBook = {
   numOfCopies: 1,
   deleted: true
 };
+const listBooks = [testBook, testUpdatedBook];
 
 const bookId = "5be1b8fa0804d7e72c85974f";
 const nonexistentId = "3j2oiujt1rhui4grioweg";
@@ -555,6 +556,40 @@ describe("Book controllers", () => {
       return request(app)
         .delete("/library/books/12345")
         .send()
+        .then(response => {
+          expect(response.statusCode).toBe(500);
+          expect(response.text).toBe("Something went wrong.");
+        });
+    });
+  });
+  describe("find all feature ", () => {
+    it("Given the user requests to find all list of books, then the findAll service is called", () => {
+      services.findAll = jest.fn();
+
+      return request(app)
+        .get("/library/books")
+        .then(() => {
+          expect(services.findAll).toHaveBeenCalled();
+        });
+    });
+
+    it("Given the user requests to find all  list books, then the controller returns a list of books", () => {
+      services.findAll = jest.fn(() => Promise.resolve(listBooks));
+
+      return request(app)
+        .get("/library/books")
+        .then(response => {
+          expect(response.statusCode).toBe(200);
+          expect(response.body).toEqual(listBooks);
+        });
+    });
+
+    it("Given any other type of error is thrown, then the controller returns a generic error message with status 500", () => {
+      const error = new Error("GENERIC_ERROR");
+      services.findAll = jest.fn(() => Promise.reject(error));
+
+      return request(app)
+        .get("/library/books")
         .then(response => {
           expect(response.statusCode).toBe(500);
           expect(response.text).toBe("Something went wrong.");

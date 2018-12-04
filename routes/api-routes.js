@@ -57,7 +57,6 @@ router.get("/library/books/:id", (req, res) => {
       }
     });
 });
-
 router.put("/library/books/:id", (req, res) => {
   const validationResult = validateAgainstBookSchema(req.body);
   if (validationResult.length > 0) {
@@ -81,6 +80,19 @@ router.put("/library/books/:id", (req, res) => {
           .status(httpStatus.INTERNAL_SERVER_ERROR)
           .send("Something went wrong.");
       }
+    });
+});
+
+router.get("/library/books", (req, res) => {
+  services
+    .findAll()
+    .then(foundBooks => {
+      res.status(httpStatus.OK).send(foundBooks);
+    })
+    .catch(err => {
+      res
+        .status(httpStatus.INTERNAL_SERVER_ERROR)
+        .send("Something went wrong.");
     });
 });
 
