@@ -14,8 +14,9 @@ const testBook = {
   author: "Author",
   edition: 1,
   numOfCopies: 1,
-  active: true
+  deleted: false
 };
+
 const testUpdatedBook = {
   _id: "5be1b8fa0804d7e72c85974f",
   isbn: "ISBN1234",
@@ -23,8 +24,21 @@ const testUpdatedBook = {
   author: "Author",
   edition: 1,
   numOfCopies: 1,
-  active: true
+  deleted: false
 };
+
+const deletedBook = {
+  _id: "5be1b8fa0804d7e72c85974f",
+  isbn: "ISBN1234",
+  title: "Title updated",
+  author: "Author",
+  edition: 1,
+  numOfCopies: 1,
+  deleted: true
+};
+
+const bookId = "5be1b8fa0804d7e72c85974f";
+const nonexistentId = "3j2oiujt1rhui4grioweg";
 
 jest.mock("../services/services");
 
@@ -63,7 +77,7 @@ describe("Book controllers", () => {
           author: "Author",
           edition: 1,
           numOfCopies: 1,
-          active: true,
+          deleted: false,
           __v: 0
         })
       );
@@ -89,7 +103,7 @@ describe("Book controllers", () => {
         author: "Author",
         edition: 1,
         numOfCopies: 1,
-        active: true
+        deleted: false
       };
 
       return request(app)
@@ -111,7 +125,7 @@ describe("Book controllers", () => {
         author: "Author",
         edition: 1,
         numOfCopies: 1,
-        active: true
+        deleted: false
       };
 
       return request(app)
@@ -133,7 +147,7 @@ describe("Book controllers", () => {
         title: "Title",
         edition: 1,
         numOfCopies: 1,
-        active: true
+        deleted: false
       };
 
       return request(app)
@@ -155,7 +169,7 @@ describe("Book controllers", () => {
         title: "Title",
         author: "Author",
         numOfCopies: 1,
-        active: true
+        deleted: false
       };
 
       return request(app)
@@ -177,7 +191,7 @@ describe("Book controllers", () => {
         title: "Title",
         author: "Author",
         edition: 1,
-        active: true
+        deleted: false
       };
 
       return request(app)
@@ -191,28 +205,6 @@ describe("Book controllers", () => {
         });
     });
 
-    it("Given the user requests to add a book without a required field (active), then the controller returns an error", () => {
-      services.createBook = jest.fn();
-
-      const testBookMissingActive = {
-        isbn: "ISBN1234",
-        title: "Title",
-        author: "Author",
-        edition: 1,
-        numOfCopies: 1
-      };
-
-      return request(app)
-        .post("/library/books")
-        .set("Accept", "application/json")
-        .set("Content-Type", "application/json")
-        .send(testBookMissingActive)
-        .then(response => {
-          expect(response.statusCode).toBe(412);
-          expect(response.body[0]).toBe("active is required");
-        });
-    });
-
     it("Given validation fails, then the createBook service will not be called", () => {
       services.createBook = jest.fn();
 
@@ -221,7 +213,7 @@ describe("Book controllers", () => {
         author: "Author",
         edition: 1,
         numOfCopies: 1,
-        active: true
+        deleted: false
       };
 
       return request(app)
@@ -236,11 +228,11 @@ describe("Book controllers", () => {
   });
 
   describe("find book by Id Book feature", () => {
-    it("Given the user requests to find  a book, then the service gets called", () => {
+    it("Given the user requests to find a book, then the service gets called", () => {
       services.findBookById = jest.fn();
 
       return request(app)
-        .get("/library/books/:id")
+        .get("/library/books/" + bookId)
         .then(() => {
           expect(services.findBookById).toHaveBeenCalled();
         });
@@ -255,12 +247,12 @@ describe("Book controllers", () => {
           author: "Author",
           edition: 1,
           numOfCopies: 1,
-          active: true,
+          deleted: false,
           __v: 0
         })
       );
       return request(app)
-        .get("/library/books/:id")
+        .get("/library/books/jdnkjvbnafjk")
         .then(response => {
           expect(response.statusCode).toBe(200);
           expect(response.body).toMatchObject(testBook);
@@ -272,7 +264,7 @@ describe("Book controllers", () => {
     it("Given the user requests to find a book with a given ID, when the service returns null, then return 404 not found", () => {
       services.findBookById = jest.fn(() => Promise.resolve(null));
       return request(app)
-        .get("/library/books/:id")
+        .get("/library/books/" + bookId)
         .then(response => {
           expect(response.statusCode).toBe(404);
           expect(response.text).toBe("Book not found.");
@@ -284,7 +276,7 @@ describe("Book controllers", () => {
       services.findBookById = jest.fn(() => Promise.reject(error));
 
       return request(app)
-        .get("/library/books/:id")
+        .get("/library/books/12345")
         .then(response => {
           expect(response.statusCode).toBe(400);
           expect(response.text).toBe("Invalid ID.");
@@ -296,7 +288,7 @@ describe("Book controllers", () => {
       services.findBookById = jest.fn(() => Promise.reject(error));
 
       return request(app)
-        .get("/library/books/:id")
+        .get("/library/books/" + bookId)
         .then(response => {
           expect(response.statusCode).toBe(500);
           expect(response.text).toBe("Something went wrong.");
@@ -306,8 +298,10 @@ describe("Book controllers", () => {
 
   describe("update Book feature", () => {
     it("Given the user requests to update a book, then the service gets called", () => {
+      services.updateBook = jest.fn();
+
       return request(app)
-        .put("/library/books/:id")
+        .put("/library/books/" + bookId)
         .send(testUpdatedBook)
         .then(() => {
           expect(services.updateBook).toHaveBeenCalled();
@@ -348,7 +342,7 @@ describe("Book controllers", () => {
       services.updateBook = jest.fn(() => Promise.resolve(null));
 
       return request(app)
-        .put("/library/books/" + "random")
+        .put("/library/books/" + nonexistentId)
         .send(testUpdatedBook)
         .then(response => {
           expect(response.statusCode).toBe(404);
@@ -391,7 +385,7 @@ describe("Book controllers", () => {
         author: "Author",
         edition: 1,
         numOfCopies: 1,
-        active: true
+        deleted: false
       };
 
       return request(app)
@@ -412,7 +406,7 @@ describe("Book controllers", () => {
         author: "Author",
         edition: 1,
         numOfCopies: 1,
-        active: true
+        deleted: false
       };
 
       return request(app)
@@ -433,7 +427,7 @@ describe("Book controllers", () => {
         title: "Title",
         edition: 1,
         numOfCopies: 1,
-        active: true
+        deleted: false
       };
 
       return request(app)
@@ -454,7 +448,7 @@ describe("Book controllers", () => {
         title: "Title",
         author: "Author",
         numOfCopies: 1,
-        active: true
+        deleted: false
       };
 
       return request(app)
@@ -475,7 +469,7 @@ describe("Book controllers", () => {
         title: "Title",
         author: "Author",
         edition: 1,
-        active: true
+        deleted: false
       };
 
       return request(app)
@@ -488,25 +482,82 @@ describe("Book controllers", () => {
           expect(response.body[0]).toBe("numOfCopies is required");
         });
     });
+  });
 
-    it("Given the user requests to update a book without a required field (active), then the controller returns an error", () => {
-      const testBookMissingActive = {
-        _id: "dfkmnlskdnfg",
-        isbn: "vndlsbf",
-        title: "Title",
-        author: "Author",
-        edition: 1,
-        numOfCopies: 1
-      };
+  describe("delete book feature", () => {
+    it("When the user tries to delete a book, then the deleteBook service is called", () => {
+      services.deleteBook = jest.fn();
 
       return request(app)
-        .put("/library/books/" + testUpdatedBook._id)
-        .set("Accept", "application/json")
-        .set("Content-Type", "application/json")
-        .send(testBookMissingActive)
+        .delete("/library/books/" + bookId)
+        .send()
+        .then(() => {
+          expect(services.deleteBook).toBeCalled();
+        });
+    });
+
+    it("When the user tries to delete a book with a given id, then the deleteBook service is called with the correct id.", () => {
+      services.deleteBook = jest.fn();
+
+      return request(app)
+        .delete("/library/books/" + testUpdatedBook._id)
+        .send()
+        .then(() => {
+          expect(services.deleteBook).toHaveBeenCalledWith(testUpdatedBook._id);
+        });
+    });
+
+    it("When the user tries to delete a book with a given id, then the route returns the correct deleted message response", () => {
+      services.deleteBook = jest.fn(() => Promise.resolve(deletedBook));
+
+      return request(app)
+        .delete("/library/books/" + bookId)
+        .send()
         .then(response => {
-          expect(response.statusCode).toBe(412);
-          expect(response.body[0]).toBe("active is required");
+          expect(response.statusCode).toBe(200);
+          expect(JSON.parse(response.text)).toEqual({
+            message: `${deletedBook.title} has been deleted.`
+          });
+        });
+    });
+
+    it("When the user tries to delete a book that does not exist, then the route returns the correct error response", () => {
+      services.deleteBook = jest.fn(() => Promise.resolve(null));
+
+      return request(app)
+        .delete("/library/books/" + nonexistentId)
+        .send()
+        .then(response => {
+          expect(response.statusCode).toBe(404);
+          expect(response.text).toBe("Book not found.");
+        });
+    });
+
+    it("When the user tries to delete a book with an invalid id, then the route returns an INVALID_ID error.", () => {
+      const error = new Error();
+      error.message = "INVALID_ID";
+      services.deleteBook = jest.fn(() => Promise.reject(error));
+
+      return request(app)
+        .delete("/library/books/" + "12345")
+        .send()
+        .then(response => {
+          expect(response.statusCode).toBe(400);
+          expect(response.text).toBe("Invalid ID.");
+        });
+    });
+
+    it("When the user tries to delete a book with any other error, then the route returns a Generic error.", () => {
+      const error = new Error();
+      error.message = "GENERIC_ERROR";
+      services.deleteBook = jest.fn(() => Promise.reject(error));
+
+      return request(app)
+        .delete("/library/books/12345")
+        .send()
+        .then(response => {
+          expect(response.statusCode).toBe(500);
+          expect(response.text).toBe("Something went wrong.");
         });
     });
   });

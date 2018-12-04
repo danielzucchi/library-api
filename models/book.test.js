@@ -164,17 +164,17 @@ describe("Book Model", () => {
     });
   });
 
-  describe("active property", () => {
-    it("has the property active", () => {
-      expect(Book.schema.paths.active).toBeDefined;
+  describe("deleted property", () => {
+    it("has the property deleted", () => {
+      expect(Book.schema.paths.deleted).toBeDefined;
     });
 
-    it("has active as a boolean", () => {
-      const active_type = typeof Book.schema.paths.active.options.type();
-      expect(active_type).toBe("boolean");
+    it("has deleted as a boolean", () => {
+      const deleted_type = typeof Book.schema.paths.deleted.options.type();
+      expect(deleted_type).toBe("boolean");
     });
-    it("active is required", () => {
-      expect(Book.schema.paths.active.options.required).toBeTruthy();
+    it("deleted is required", () => {
+      expect(Book.schema.paths.deleted.options.default).toBeFalsy();
     });
   });
 });
