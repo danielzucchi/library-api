@@ -4,6 +4,7 @@
   "description": "A library app for books! Who ever thought?",
   "main": "server.js",
   "scripts": {
+    "testWatch": "jest --watch",
     "test": "jest",
     "start": "nodemon server.js"
   },
@@ -16,12 +17,14 @@
   "dependencies": {
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
-    "mongodb-memory-server": "^2.7.2",
+    "http-status-codes": "^1.3.0",
+    "jsonschema": "^1.2.4",
     "mongoose": "^5.3.9",
-    "nodemon": "^1.18.5",
-    "supertest": "^3.3.0"
+    "nodemon": "^1.18.7",
+    "swagger-ui-express": "^4.0.1"
   },
   "devDependencies": {
-    "jest": "^23.6.0"
+    "jest": "^23.6.0",
+    "supertest": "^3.3.0"
   }
 }

@@ -15,7 +15,7 @@ const bookSchema = new Schema({
   genre: String,
   publisher: String,
   coverImage: String,
-  active: { type: Boolean, required: true }
+  deleted: { type: Boolean, default: false }
 });
 
 const Book = mongoose.model("Book", bookSchema);
