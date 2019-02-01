@@ -1,6 +1,7 @@
 # and-library-nodejs
 
-Application to manage AND Digital's books in NodeJS
+Application to manage books in NodeJS
+
 
 # 1.0 Tech stack
 
